@@ -25,5 +25,7 @@ urlpatterns = [
     path('register/',views.register),
     path('login/',views.login),
     path('getName',views.getName),
-    path('reservation/',views.reserved)
+    path('reservation/',views.reserved),
+    path('time/',views.reservTime),
+    path('machine/',views.reserveMachine)
 ]
