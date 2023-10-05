@@ -10,4 +10,4 @@ class AccountSerializers(serializers.ModelSerializer):
 class ReservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reservation
-        fields = ['day','time','email','seat','ex_name','user_name','user_phone']
+        fields = ['day','time','minute','email','seat','ex_name','user_name','user_phone']

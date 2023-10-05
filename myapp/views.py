@@ -105,21 +105,24 @@ def reserved(request):
     if request.method=="POST":
         day = request.POST.get('day', '')
         time = request.POST.get('time', '')
+        minute = request.POST.get('minute','')
         email = request.POST.get('email', '')
-        print(email)
+
         seat = request.POST.get('seat','')
 
         ex_name = request.POST.get('ex_name', '')
         user_name = request.POST.get('user_name', '')
         user_phone = request.POST.get('user_phone', '')
-        data = {'day': day, 'time': time, 'email': email,'seat' : seat,'ex_name': ex_name,'user_name':user_name,'user_phone':user_phone}
+        data = {'day': day, 'time': time, 'minute': minute, 'email': email,'seat' : seat,'ex_name': ex_name,'user_name':user_name,'user_phone':user_phone}
+
         serializer = ReservationSerializer(data=data)
-        if Reservation.objects.filter(day=day,time=time,seat=seat,ex_name=ex_name).exists():
+        print(serializer)
+        if Reservation.objects.filter(day=day,time=time,minute=minute,seat=seat,ex_name=ex_name).exists():
             return JsonResponse({"message": "해당 기구는 이미 예약되어 있습니다."}, status=202)
         else:
 
             info = Reservation.objects.filter(email=email)
-            if Reservation.objects.filter(day=day,time=time).exists():
+            if Reservation.objects.filter(day=day,time=time,minute=minute).exists():
                 return JsonResponse({"message": "선택하신 시간에 다른 운동기구를 예약하셨습니다."}, status=203)
             else:
                 print(serializer.is_valid())
@@ -138,6 +141,37 @@ def reserved(request):
             return JsonResponse({"message": "삭제할 계정이 없습니다."})
     else:
         return JsonResponse({"message": "잘못된 요청입니다."}, status=400)
+@csrf_exempt
+def reservTime(request):
+    day = request.POST.get('day', '')
+    time = request.POST.get('time', '')
+    minute = request.POST.get('minute', '')
+    email = request.POST.get('email', '')
+    if Reservation.objects.filter(day=day,time=time,minute=minute,email=email).exists():
+        return JsonResponse({"message":"선택하신 시간에 다른 운동기구를 예약하셨습니다."}, status=203)
+    else:
+        return JsonResponse({"message":"예약 가능."}, status=201)
+    return JsonResponse({"message": "잘못된 요청입니다."}, status=400)
+@csrf_exempt
+def reserveMachine(request):
+    day = request.POST.get('day', '')
+    time = request.POST.get('time', '')
+    minute = request.POST.get('minute', '')
+    seat = request.POST.get('seat', '')
+    ex_name = request.POST.get('ex_name', '')
+
+
+    print(day,time,minute,seat,ex_name)
+    print(Reservation.objects.filter(day=day).exists())
+    print(Reservation.objects.filter(time=time).exists())
+    print(Reservation.objects.filter(minute=minute).exists())
+    print(Reservation.objects.filter(seat=seat).exists())
+    print(Reservation.objects.filter(ex_name=ex_name).exists())
+    if Reservation.objects.filter(day=day, time=time, minute=minute, seat=seat, ex_name=ex_name).exists():
+        return JsonResponse({"message": "해당 기구는 이미 예약되어 있습니다."}, status=202)
+    else:
+        return JsonResponse({"message": "예약 가능"}, status=201)
+    return JsonResponse({"message": "잘못된 요청입니다."}, status=400)
 
 def index(request):
     print(a) #에러발생

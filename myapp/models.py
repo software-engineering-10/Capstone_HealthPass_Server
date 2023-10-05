@@ -4,14 +4,15 @@ from django.db import models
 
 class Account(models.Model):
     name = models.CharField(max_length=10)
-    phone = models.CharField(max_length=20,default='')
+    phone = models.CharField(max_length=20)
     email = models.CharField(max_length=40)
     password = models.CharField(max_length=20)
 
 class Reservation(models.Model):
     day = models.CharField(max_length=20)
     time = models.CharField(max_length=20)
-    email = models.CharField(max_length=20)
+    minute = models.CharField(max_length=20)
+    email = models.CharField(max_length=30)
     seat = models.CharField(max_length=20)
     ex_name = models.CharField(max_length=20)
     user_name = models.CharField(max_length=20)
