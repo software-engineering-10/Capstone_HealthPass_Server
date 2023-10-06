@@ -154,25 +154,74 @@ def reservTime(request):
     return JsonResponse({"message": "잘못된 요청입니다."}, status=400)
 @csrf_exempt
 def reserveMachine(request):
-    day = request.POST.get('day', '')
+    if request.method == "POST":
+        day = request.POST.get('day', '')
+        time = request.POST.get('time', '')
+        minute = request.POST.get('minute', '')
+        seat = request.POST.get('seat', '')
+        ex_name = request.POST.get('ex_name', '')
+
+
+        print(day,time,minute,seat,ex_name)
+        print(Reservation.objects.filter(day=day).exists())
+        print(Reservation.objects.filter(time=time).exists())
+        print(Reservation.objects.filter(minute=minute).exists())
+        print(Reservation.objects.filter(seat=seat).exists())
+        print(Reservation.objects.filter(ex_name=ex_name).exists())
+        if Reservation.objects.filter(day=day, time=time, minute=minute, seat=seat, ex_name=ex_name).exists():
+            return JsonResponse({"message": "해당 기구는 이미 예약되어 있습니다."}, status=202)
+        else:
+            return JsonResponse({"message": "예약 가능"}, status=201)
+        return JsonResponse({"message": "잘못된 요청입니다."}, status=400)
+
+
+
+
+
+@csrf_exempt
+def reserveInfo(request):
+    if request.method=="POST":
+        email = request.POST.get('email', '')
+        reservations = Reservation.objects.filter(email=email)
+        print(reservations)
+        if reservations.exists():
+            # 이메일에 해당하는 예약 정보가 존재할 경우
+            reservation_list = list(reservations.values())  # QuerySet을 리스트로 변환
+            return JsonResponse(reservation_list, status=201,safe=False)
+        return JsonResponse({"message": "잘못된 요청입니다."}, status=400,safe=False)
+    elif request.method == "DELETE":
+        day = request.GET.get('day', '')  # 혹은 request.GET.get() 또는 request.body를 사용할 수 있음
+        time = request.GET.get('time', '')
+        minute = request.GET.get('minute', '')
+        seat = request.GET.get('seat', '')
+        ex_name = request.GET.get('ex_name', '')
+        print("day=" + day, "time="+time, minute, seat, ex_name)
+        delete_data = Reservation.objects.filter(day=day, time=time, minute=minute, seat=seat, ex_name=ex_name)
+
+        if delete_data.exists():
+            delete_data.delete()
+            return JsonResponse({"message": "예약이 취소되었습니다."}, status=201, safe=False)
+        else:
+            return JsonResponse({"message": "데이터가 없습니다."}, status=202, safe=False)
+
+        return JsonResponse({"message": "잘못된 요청입니다."}, status=400, safe=False)
+
+def deleteData(request):
+    day = request.POST.get('day', '')  # 혹은 request.GET.get() 또는 request.body를 사용할 수 있음
     time = request.POST.get('time', '')
     minute = request.POST.get('minute', '')
     seat = request.POST.get('seat', '')
     ex_name = request.POST.get('ex_name', '')
+    print("dat="+day, time, minute, seat, ex_name)
+    delete_data = Reservation.objects.filter(day=day, time=time, minute=minute, seat=seat, ex_name=ex_name)
 
-
-    print(day,time,minute,seat,ex_name)
-    print(Reservation.objects.filter(day=day).exists())
-    print(Reservation.objects.filter(time=time).exists())
-    print(Reservation.objects.filter(minute=minute).exists())
-    print(Reservation.objects.filter(seat=seat).exists())
-    print(Reservation.objects.filter(ex_name=ex_name).exists())
-    if Reservation.objects.filter(day=day, time=time, minute=minute, seat=seat, ex_name=ex_name).exists():
-        return JsonResponse({"message": "해당 기구는 이미 예약되어 있습니다."}, status=202)
+    if delete_data.exists():
+        delete_data.delete()
+        return JsonResponse({"message": "예약이 취소되었습니다."}, status=201, safe=False)
     else:
-        return JsonResponse({"message": "예약 가능"}, status=201)
-    return JsonResponse({"message": "잘못된 요청입니다."}, status=400)
+        return JsonResponse({"message": "데이터가 없습니다."}, status=202, safe=False)
 
+    return JsonResponse({"message": "잘못된 요청입니다."}, status=400, safe=False)
 def index(request):
     print(a) #에러발생
     return render(request, 'app1/index.html')

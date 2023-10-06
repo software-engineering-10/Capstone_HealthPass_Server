@@ -27,5 +27,7 @@ urlpatterns = [
     path('getName',views.getName),
     path('reservation/',views.reserved),
     path('time/',views.reservTime),
-    path('machine/',views.reserveMachine)
+    path('machine/',views.reserveMachine),
+    path('info/',views.reserveInfo),
+    path('deleteData/',views.deleteData)
 ]
